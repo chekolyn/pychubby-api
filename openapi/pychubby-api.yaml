@@ -1,0 +1,75 @@
+openapi: "3.0.0"
+
+info:
+  title: PyChubby Api
+  version: "v0.1"
+  description: Small Api for [PyChubby](https://github.com/jankrepl/pychubby) using [connexion](https://github.com/zalando/connexion).
+
+servers:
+  - url: /api
+
+paths:
+  /actions:
+    get:
+      summary: List available actions
+      description: List available actions to perform.
+      x-openapi-router-controller: api
+      operationId: get_actions
+      responses:
+        '200':
+          description: List of actions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Actions'
+
+  /actions/{action}:
+    post:
+      summary: Perform Action on input image
+      x-openapi-router-controller: api
+      operationId: perform
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                inp_img:
+                  type: string
+                  format: binary
+      parameters:
+        - in: path
+          name: action
+          required: true
+          schema:
+            $ref: '#/components/schemas/Actions'
+      responses:
+        '200':
+          description: Output Image Binary
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Perform Failed.
+        '500':
+          description: Server Error
+
+
+components:
+  schemas:
+    Actions:
+      type: string
+      enum:
+        - Chubbify
+        - LinearTransform
+        - OpenEyes
+        - RaiseEyebrow
+        - Smile
+        - StretchNostrils
